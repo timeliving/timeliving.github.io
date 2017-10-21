@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java中的字符串 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="##1.不可变的String对象 String对象是不可变，以下是String类的源码： public final class String implements java.io.Serializable, Comparable&amp;lt;String&amp;gt;, CharSequence {     /** The value is used for character storage. */">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中的字符串">
+<meta property="og:url" content="http://yoursite.com/2017/08/06/Java中的字符串/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="##1.不可变的String对象 String对象是不可变，以下是String类的源码： public final class String implements java.io.Serializable, Comparable&amp;lt;String&amp;gt;, CharSequence {     /** The value is used for character storage. */">
+<meta property="og:image" content="http://i.imgur.com/0Ru89At.png">
+<meta property="og:updated_time" content="2017-08-07T14:09:44.386Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java中的字符串">
+<meta name="twitter:description" content="##1.不可变的String对象 String对象是不可变，以下是String类的源码： public final class String implements java.io.Serializable, Comparable&amp;lt;String&amp;gt;, CharSequence {     /** The value is used for character storage. */">
+<meta name="twitter:image" content="http://i.imgur.com/0Ru89At.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Java中的字符串" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/06/Java中的字符串/" class="article-date">
+  <time datetime="2017-08-06T09:06:07.000Z" itemprop="datePublished">2017-08-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java中的字符串
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##1.不可变的String对象</p>
+<p>String对象是不可变，以下是String类的源码：</p>
+<pre><code>public final class String
+implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence
+{
+    /** The value is used for character storage. */
+    private final char value[];
+
+    /** The offset is the first index of the storage that is used. */
+    private final int offset;
+
+    /** The count is the number of characters in the String. */
+    private final int count;
+
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+
+    /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    private static final long serialVersionUID = -6849794470754667710L;
+
+    ........
+}
+</code></pre><p>从以上可看出：</p>
+<ol>
+<li>String类是final类，也就意味着String不能被继承</li>
+<li>从上面可看出String类是使用char数组保存字符串的</li>
+</ol>
+<p>执行以下代码可发现String类是不可改变的</p>
+<pre><code>public class Immutable {
+    public static String upcase(String s){
+        return s.toUpperCase();
+    }
+
+    public static void main(String[] args){
+        String q=&quot;howdy&quot;;
+        System.out.print(q);
+        String qq = upcase(q);
+        System.out.print(qq);
+        System.out.print(q);
+    }
+}
+</code></pre><p>以上代码输出结果是<code>howdy HOWDY howdy</code>由此可得出当修改一个String对象时，实际上是生成一个新的String对象并返回一个新的对象的引用。</p>
+<blockquote>
+<p>因此String对象一旦被创建就是固定不变的，对String对象的任何改变都不影响到原对象，任何change操作都会生成新的对象</p>
+</blockquote>
+<p>以下是String类的一些方法实现，从中也可看出String对象是不可变的</p>
+<pre><code>public String substring(int beginIndex, int endIndex) {
+    if (beginIndex &lt; 0) {
+        throw new StringIndexOutOfBoundsException(beginIndex);
+    }
+    if (endIndex &gt; count) {
+        throw new StringIndexOutOfBoundsException(endIndex);
+    }
+    if (beginIndex &gt; endIndex) {
+        throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
+    }
+    return ((beginIndex == 0) &amp;&amp; (endIndex == count)) ? this :
+        new String(offset + beginIndex, endIndex - beginIndex, value);
+}
+
+public String concat(String str) {
+    int otherLen = str.length();
+    if (otherLen == 0) {
+        return this;
+    }
+    char buf[] = new char[count + otherLen];
+    getChars(0, count, buf, 0);
+    str.getChars(0, otherLen, buf, count);
+    return new String(0, count + otherLen, buf);
+}
+
+public String replace(char oldChar, char newChar) {
+    if (oldChar != newChar) {
+        int len = count;
+        int i = -1;
+        char[] val = value; /* avoid getfield opcode */
+        int off = offset;   /* avoid getfield opcode */
+
+        while (++i &lt; len) {
+        if (val[off + i] == oldChar) {
+            break;
+        }
+        }
+        if (i &lt; len) {
+        char buf[] = new char[len];
+        for (int j = 0 ; j &lt; i ; j++) {
+            buf[j] = val[off+j];
+        }
+        while (i &lt; len) {
+            char c = val[off + i];
+            buf[i] = (c == oldChar) ? newChar : c;
+            i++;
+        }
+        return new String(0, len, buf);
+        }
+    }
+    return this;
+}
+</code></pre><p>##2.字符串常量池</p>
+<p>JVM为了提高性能和减少内存开销，在实例化字符串的时候进行了一些优化：使用字符串常量池，每当我们创建字符串常量时，JVM会首先检查字符串常量池，如果该字符串已经存在常量池中，那么就直接返回常量池中的实例引用。如果字符串不存在常量池中，就会实例化该字符串，并且将其放到常量池中。</p>
+<blockquote>
+<p>Java中的常量池，实际上分为两种形态：静态常量池和运行时常量池。</p>
+<p>所谓静态常量池，即*.class文件中的常量池，class文件中的常量池不仅仅包含字符串(数字)字面量，还包含类、方法的信息，占用class文件绝大部分空间。</p>
+<p>而运行时常量池，则是jvm虚拟机在完成类装载操作后，将class文件中的常量池载入到内存中，并保存在方法区中，我们常说的常量池，就是指方法区中的运行时常量池。</p>
+</blockquote>
+<p>例：字符串常量池的使用</p>
+<pre><code>String s0 = &quot;qwe&quot;; 
+String s1 = &quot;qwe&quot;; 
+System.out.println(s0==s1); //true  可以看出s0和s1是指向同一个对象的。
+</code></pre><p>s0、s1都是指向JVM字符串常量池中的”qwe”对象</p>
+<p>而当使用new关键字创建字符串时就完全不同了，例：</p>
+<pre><code>String s2 = new String(&quot;qwe&quot;);
+</code></pre><p>首先，new关键字一定会产生一个对象qwe，且存储在堆中，所以在执行以下代码时结果就不相同了</p>
+<pre><code>System.out.println(s1==s2); //false  可以看出s1和s2是指向不同对象的。
+</code></pre><p>以上s0、s1和s2的关系可见下图<br><img src="http://i.imgur.com/0Ru89At.png" alt=""></p>
+<blockquote>
+<p>总结：虽然s0、s1和s2的值相同，但是s2是指向时创建在堆中的对象。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/08/06/Java中的字符串/" data-id="cj91fa84q0003mcvjwb0xtd47" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/21/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/29/Java-反射相关/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">Java 反射相关</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/10/21/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/06/Java中的字符串/">Java中的字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/29/Java-反射相关/">Java 反射相关</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/26/Use-Markdown/">Use Markdown</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/26/java中Class-getResource用法/">java中Class.getResource用法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

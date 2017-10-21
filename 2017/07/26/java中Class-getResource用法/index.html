@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>java中Class.getResource用法 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文载于:http://gavin-chen.iteye.com/blog/261151 用JAVA获取文件，听似简单，但对于很多像我这样的新人来说，还是掌握颇浅，用起来感觉颇深，大常最经常用的，就是用JAVA的File类，如要取得c:/test.txt文件，就会这样用File file = new File(&amp;quot;c:/test.txt&amp;quot;);这样用有什么问题，相信大家都知道，就是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java中Class.getResource用法">
+<meta property="og:url" content="http://yoursite.com/2017/07/26/java中Class-getResource用法/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="原文载于:http://gavin-chen.iteye.com/blog/261151 用JAVA获取文件，听似简单，但对于很多像我这样的新人来说，还是掌握颇浅，用起来感觉颇深，大常最经常用的，就是用JAVA的File类，如要取得c:/test.txt文件，就会这样用File file = new File(&amp;quot;c:/test.txt&amp;quot;);这样用有什么问题，相信大家都知道，就是">
+<meta property="og:updated_time" content="2017-07-26T06:49:21.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java中Class.getResource用法">
+<meta name="twitter:description" content="原文载于:http://gavin-chen.iteye.com/blog/261151 用JAVA获取文件，听似简单，但对于很多像我这样的新人来说，还是掌握颇浅，用起来感觉颇深，大常最经常用的，就是用JAVA的File类，如要取得c:/test.txt文件，就会这样用File file = new File(&amp;quot;c:/test.txt&amp;quot;);这样用有什么问题，相信大家都知道，就是">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-java中Class-getResource用法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/26/java中Class-getResource用法/" class="article-date">
+  <time datetime="2017-07-26T06:26:40.000Z" itemprop="datePublished">2017-07-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java中Class.getResource用法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文载于:<a href="http://gavin-chen.iteye.com/blog/261151" target="_blank" rel="external">http://gavin-chen.iteye.com/blog/261151</a></p>
+<p>用JAVA获取文件，听似简单，但对于很多像我这样的新人来说，还是掌握颇浅，用起来感觉颇深，大常最经常用的，就是用JAVA的File类，如要取得<code>c:/test.txt</code>文件，就会这样用<code>File file = new File(&quot;c:/test.txt&quot;);</code>这样用有什么问题，相信大家都知道，就是路径硬编码，对于JAVA精神来说，应用应该一次成型，到处可用，并且从现实应用来讲，最终生成的应用也会部署到Windows外的操作系统中，对于linux来说，在应用中用了c:/这样的字样，就是失败，所以，我们应该尽量避免使用硬编码，即直接使用绝对路径。</p>
+<p>在Servlet应用中，有一个<code>getRealPath(String str)</code>的方法，这个方法尽管也可以动态地获得文件的路径，不秘直接手写绝对路径，但这也是一个不被建议使用的方法，那么，我们有什么方法可以更好地获得文件呢?</p>
+<p>那就是<code>Class.getResource()</code>与<code>Class.getResourceAsStream()</code>方法，但很多人还是不太懂它的用法，因为很多人（比如不久前的我）都不知道应该传怎么样的参数给它，当然，有些人己经用得如火纯青，这些人是不需要照顾的，在此仅给不会或者还不是很熟的人解释一点点。</p>
+<p>比如我们有以下目录</p>
+<pre><code>|--project 
+    |--src
+        |--javaapplication
+            |--Test.java
+            |--file1.txt
+        |--file2.txt
+    |--build 
+        |--javaapplication
+            |--Test.class
+            |--file3.txt
+        |--file4.txt
+</code></pre><p>在上面的目录中，有一个src目录，这是JAVA源文件的目录，有一个build目录，这是JAVA编译后文件(.class文件等）的存放目录，那么，我们在Test类中应该如何分别获得file1.txt  file2.txt  file3.txt  file4.txt这四个文件呢？</p>
+<p>首先讲file3.txt与file4.txt</p>
+<p>file3.txt:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">方法一：</div><div class="line">File file3 = new File(Test.class.getResource(&quot;file3.txt&quot;).getFile());</div><div class="line">方法二：</div><div class="line">File file3 = new File(Test.class.getResource(&quot;/javaapplication/file3.txt&quot;).getFile());</div><div class="line">方法三：</div><div class="line">File file3 = new File(Test.class.getClassLoader().getResource(&quot;javaapplication/file3.txt&quot;).getFile());</div></pre></td></tr></table></figure></p>
+<p>file4.txt:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">方法一：</div><div class="line">File file4 = new File(Test.class.getResource(&quot;/file4.txt&quot;).getFile());</div><div class="line">方法二：</div><div class="line">File file4 = new File(Test.class.getClassLoader().getResource(&quot;file4.txt&quot;).getFile());</div></pre></td></tr></table></figure></p>
+<p>很好，我们可以有多种方法选择，但是file1与file2文件呢？如何获得？<br>答案是，你只能写上它们的绝对路径，不能像file3与file4一样用<code>class.getResource()</code>这种方法获得，它们的获取方法如下<br>假如整个project目录放在c:/下，那么file1与file2的获取方法分别为<br>file1.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">方法一：</div><div class="line">File file1 = new File(&quot;c:/project/src/javaapplication/file1.txt&quot;);</div><div class="line">方法二：。。。没有</div></pre></td></tr></table></figure></p>
+<p>file2.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">方法一：</div><div class="line">File file2 = new File(&quot;c:/project/src/file2.txt&quot;);</div><div class="line">方法二：。。。也没有</div></pre></td></tr></table></figure></p>
+<p>总结一下，就是你想获得文件，你得从最终生成的.class文件为着手点，不要以.java文件的路径为出发点，因为真正使用的就是.class，不会拿个.java文件就使用，因为java是编译型语言嘛</p>
+<p>至于<code>getResouce()</code>方法的参数，你以class为出发点，再结合相对路径的概念，就可以准确地定位资源文件了，至于它的根目录嘛，你用不同的IDE build出来是不同的位置下的，不过都是以顶层package作为根目录，比如在Web应用中，有一个WEB-INF的目录，WEB-INF目录里面除了web.xml文件外，还有一个classes目录，没错了，它就是你这个WEB应用的package的顶层目录，也是所有.class的根目录“/”，假如clasaes目录下面有一个file.txt文件，它的相对路径就是”/file.txt”，如果相对路径不是以”/“开头，那么它就是相对于.class的路径。。</p>
+<p>还有一个<code>getResourceAsStream()</code>方法，参数是与<code>getResouce()</code>方法是一样的，它相当于你用<code>getResource()</code>取得File文件后，再<code>new InputStream(file)</code>一样的结果</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/07/26/java中Class-getResource用法/" data-id="cj91fa8510004mcvj7vpommfn" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/07/26/Use-Markdown/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          Use Markdown
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/25/First Blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">First Blog</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/10/21/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/06/Java中的字符串/">Java中的字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/29/Java-反射相关/">Java 反射相关</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/26/Use-Markdown/">Use Markdown</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/26/java中Class-getResource用法/">java中Class.getResource用法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
